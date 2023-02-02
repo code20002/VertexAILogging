@@ -1,0 +1,83 @@
+Today I will be presenting the logging features available focusing primarily on the Vertex AI logging.
+Here I am going to go over the two components - Pipelines & Endpoints 
+For each of these components, the log attributes that are available are Severity, TimeStamp and the summary or message. 
+In order to view the logs there are couple of options that we can use 
+- first option is to navitage directly to the Vertex pipelines, endpoints and predictions and view the logs from there.
+-- second option is to navigate to the cloud logging and view them in the log explorer where you can apply filters like severity, time range etc.
+and also you can write custom queries to pull specific logs as well. Cloud logging again has number of options to visualize and track these logs 
+which I am going to demo it in the next steps.
+
+First let's dive into the pipelines. I am going to pick a sample pipeline which is right here:
+
+https://console.cloud.google.com/vertex-ai/locations/us-east4/pipelines/runs/7226351057557782528?cloudshell=false&project=anbc-pdev
+
+Over here on the pipeline we can select each node and view the logs related to that particular step and the logs are displayed right here in 
+the pipeline console. In this console itself we have option to navigate to the log explorer which is the alternate and
+and more comprehensive way of analyzing the logs.
+
+Before going to the log explorer and the querying part I would like to quickly go over the logs for endpoints here in the console.
+Here I am going to select the endpoint and view the logs from here which will then navigate to the log explorer.
+In here there are options to query logs based on filters to see more specific logs. 
+Resource type can be selected to be either an endpoint or PipelineJob
+you can also provide the endpoint_id and also job_id for pipelinejobs
+filters can also be applied on timestamps, severity - there are multiple severity levels like warning, error, critical, info etc.,
+You also have an option to select the scope for a project level or storage. Basically if you select project level the scope is going to be
+on the entire project. If it's limited to storage it shows the logs that are saved in specific log buckets that are configured.
+
+Another feature that I believe would be useful is to save queries with typically used filters and components of Vertex AI.
+There is a library of queries that is available predefined in the log explorer but it doesnt include predefined queries. 
+For this reason, I started with saving 4-5 queries that I think would be helpful for users to quickly re-use and run to fetch the logs.
+We can keep adding more to this as we progress through the onboarding and enablement. 
+
+
+There might already be a pattern set up for tracking logs of different events for each tenent by the IO team,
+but to give a general idea of how we can start tracking logs specific to Vertex AI, there are certain steps that we need to follow.
+
+1. We can create a cloud logging bucket for storing logs.
+2. then using the log router feature we can create sink to route the logs to this new bucket. While creating the log sink,
+the inclusion filter would be the logs related to google aiplatform which covers the Vertex AI logs.
+3. Then we can start using the log explorer and refine the scope to view and analyze only the Vertex AI Logs.
+4. The log sink can be created right here in the cloud logging area. Just navigate to the log router feature
+5. You can see there are few sinks already created with buckets and pub sub topic types. 
+6. If you select the create sink, provide the sink name, destination which is typically a BigQuery table or bucket.
+7. Based on my observation, BigQuery table seems to be a good place to start logging the Vertex logs keeping the costs and performance in mind.
+8.Then you chose what are the inclusion filters. here we are focused on getting logs for Vertex AI so the filter would be aiplatform.googleapis.com
+and you also select to track only based on severity level of error or higher if we are not interested in the warnings or info level logs.
+9. There is an optional field to specify the exculsion filter as well if you would like to use this to exclude certain logs to be saved that can
+again be cost effective.
+10. I don't have the rights to create this in anbc-pdev but just wanted to walk through this so everyone is aware.
+11. Alternate way to do this we can also use the gcloud commands to create the sinks that's another easy option as well.
+
+Then in the cloud logging, there is the logs dashboard feature which doesnt include much visualizations around Vertex AI. Hopefully google
+adds Vertex AI logs to their dashboards in the future. Currently the dashboards presents more of the Kubernetes, Compute Engine and BigQuery 
+related logs.
+
+One more feature that I wanted to bring it up here is the log storage - where you can see the default bucket and we can also create a new bucket 
+if we decide to have one for Vertex AI. 
+
+
+Finally the last topic for logging - If we navigate to the monitoring feature in GCP. Here there is an option to create a monitoring dashboard
+based on the logs. I have created a sample dashboard for Vertex AI Endpoints and the errors tracked for the last 2 weeks and the time filter can 
+always be adjusted. I will quickly walk through how to create a sample dashboard here. 
+Go to create dashboard and you will see a wide variety of charts and graphs that you can use. Then you can also select the type of data you want to see
+so here I select Vertex AI endpoint. There is option to track feature store logs as well. So you select the kind of resource you want to see
+and you can add more charts as well. You can actually embed the entire log explorer here in the form of a log panel which will mimic the same
+user experience you will have while working on the log explorer. So lot of good options here to create log based dashboards for vertex ai.
+
+There is also metrics explorer which you can view some log based metrics and their charts and you can select the vertex ai component that you 
+want to visualize. You can actually create a log based metrics chart and save it to the dashboard that you created.
+Here you also have uptime checks feature to monitor the endpoints as well. 
+
+ANd ....That would be all for my demo on the user story for logging strategy.
+
+
+
+
+
+
+
+
+
+
+
+
